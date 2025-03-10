@@ -1,34 +1,47 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { WalletService } from './wallet.service';
-import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { WalletCreateRequestDto } from './dto/wallet.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('wallet')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
+  @ApiBearerAuth('JWT')
   @Post()
-  create(@Body() createWalletDto: CreateWalletDto) {
+  create(@Body() createWalletDto: WalletCreateRequestDto) {
     return this.walletService.create(createWalletDto);
   }
 
+  @ApiBearerAuth('JWT')
   @Get()
   findAll() {
     return this.walletService.findAll();
   }
 
+  @ApiBearerAuth('JWT')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.walletService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWalletDto: UpdateWalletDto) {
-    return this.walletService.update(+id, updateWalletDto);
-  }
-
+  @ApiBearerAuth('JWT')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.walletService.remove(+id);
+  }
+
+  @ApiBearerAuth('JWT')
+  @Post('create')
+  createWallet(@Body() createWalletDto: WalletCreateRequestDto) {
+    return this.walletService.create(createWalletDto);
   }
 }

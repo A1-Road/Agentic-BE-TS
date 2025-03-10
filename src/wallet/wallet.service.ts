@@ -1,11 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { WalletCreateRequestDto } from './dto/wallet.dto';
+import { PrivyClient } from '@privy-io/server-auth';
+import { UserService } from 'src/user/user.service';
+import { User } from 'src/schemas/user.schema';
 
 @Injectable()
 export class WalletService {
-  create(createWalletDto: CreateWalletDto) {
-    return 'This action adds a new wallet';
+  constructor(
+    private privyClient: PrivyClient,
+    private userService: UserService,
+  ) {}
+
+  async create(createWalletDto: WalletCreateRequestDto): Promise<User | null> {
+    const { id, address, chainType } = await this.privyClient.walletApi.create({
+      chainType: createWalletDto.chain_type,
+    });
+    return await this.userService.addWallet(createWalletDto.user_id, {
+      walletId: id,
+      address,
+      chainType,
+    });
   }
 
   findAll() {
@@ -14,10 +28,6 @@ export class WalletService {
 
   findOne(id: number) {
     return `This action returns a #${id} wallet`;
-  }
-
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
   }
 
   remove(id: number) {

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
-type Wallet = {
+export type Wallet = {
   chainType: string;
   walletId: string;
   address: string;

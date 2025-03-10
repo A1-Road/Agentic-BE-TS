@@ -6,6 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
 import { UserModule } from 'src/user/user.module';
+import { HttpModule } from '@nestjs/axios';
+import { WalletModule } from 'src/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { UserModule } from 'src/user/user.module';
         signOptions: { expiresIn: '1H' },
       }),
     }),
+    HttpModule,
+    WalletModule,
   ],
   providers: [
     {
