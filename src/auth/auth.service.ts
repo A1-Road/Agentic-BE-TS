@@ -10,7 +10,6 @@ import { UserService } from 'src/user/user.service';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { WalletService } from 'src/wallet/wallet.service';
-import { User } from 'src/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -62,11 +61,12 @@ export class AuthService {
     const { username, email, password } = dto;
     const hashedPassword = await this.hashPassword(password);
     const user = await this.userService.create(username, email, hashedPassword);
-    let wallet: User | null = null;
+    let wallet: { id: string; chainType: string; address: string } | null =
+      null;
     try {
       wallet = await this.walletService.create({
-        user_id: user._id,
-        chain_type: 'ETH',
+        userId: user._id,
+        chainType: 'ETH',
       });
     } catch {
       console.log('Failed to create wallet');
@@ -77,9 +77,7 @@ export class AuthService {
     return {
       id: user._id,
       username,
-      wallets: wallet
-        ? [{ chainType: wallet.wallets[0].chainType, balance: 0 }]
-        : [],
+      wallets: wallet ? [{ chainType: wallet.chainType, balance: 0 }] : [],
       access_token: this.jwtService.sign(result),
     };
   }
